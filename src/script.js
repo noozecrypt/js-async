@@ -24,18 +24,22 @@ const renderError = function (msg) {
     countriesContainer.insertAdjacentHTML('beforeend', msg);
 };
 
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+    return fetch(url).then(response => {
+        if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+        return response.json();
+    });
+}
+
 const getCountryAndNeighbor = function (countryCode) {
 
-    fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`)
-        .then(response => response.json())
+    getJSON(`https://restcountries.com/v3.1/alpha/${countryCode}`, 'Country not found')
         .then(([data]) => {
             renderCountry(data);
+            if (!data.borders) throw new Error('No neighbouring country found; likely to be an island 🏝')
             const [neighbor] = data.borders;
-            if (!neighbor) return;
-            return fetch(`https://restcountries.com/v3.1/alpha/${neighbor}`);
-
+            return getJSON(`https://restcountries.com/v3.1/alpha/${neighbor}`, 'Country not found');
         })
-        .then(response => response.json())
         .then(([data]) => renderCountry(data))
         .catch(err => {
             console.error(`${err} ‼‼`);
@@ -49,5 +53,5 @@ const getCountryAndNeighbor = function (countryCode) {
 };
 
 btn.addEventListener('click', function () {
-    getCountryAndNeighbor('de');
+    getCountryAndNeighbor('uae');
 });
