@@ -1,10 +1,14 @@
 'use strict';
 
-console.log('Test Start');
-setTimeout(() => console.log('0 sec timer'), 0);
-Promise.resolve('Resolved Promise #1').then(res => console.log(res));
-Promise.resolve('Resolved promise #2').then(res => {
-    for (let i = 0; i < 1000000000; i++) { }
-    console.log(res);
+const promise = new Promise((resolve, reject) => {
+    console.log('Lottery draw is happening 🔮');
+    setTimeout(() => {
+        if (Math.random() >= 0.5) {
+            resolve('You Won 💰');
+        } else {
+            reject(new Error('You lost your money 💩'));
+        }
+    }, 2000);
 });
-console.log('Test End');
+
+promise.then(result => console.log(result)).catch(err => console.error(err));
