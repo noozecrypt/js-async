@@ -18,7 +18,10 @@ const renderCountry = function (data, className = '') {
     </article>`;
 
     countriesContainer.insertAdjacentHTML('beforeend', html);
-    countriesContainer.style.opacity = 1;
+};
+
+const renderError = function (msg) {
+    countriesContainer.insertAdjacentHTML('beforeend', msg);
 };
 
 const getCountryAndNeighbor = function (countryCode) {
@@ -33,11 +36,18 @@ const getCountryAndNeighbor = function (countryCode) {
 
         })
         .then(response => response.json())
-        .then(([data]) => renderCountry(data));
+        .then(([data]) => renderCountry(data))
+        .catch(err => {
+            console.error(`${err} ‼‼`);
+            renderError(`Something went wrong 😔 ${err.message}`);
+        }).finally(() => {
+            btn.style.display = 'none';
+            countriesContainer.style.opacity = 1;
+
+        });
 
 };
 
-getCountryAndNeighbor('de');
-
-
-///////////////////////////////////////
+btn.addEventListener('click', function () {
+    getCountryAndNeighbor('de');
+});
