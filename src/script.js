@@ -23,33 +23,21 @@ const renderCountry = function (data, className = '') {
 
 const getCountryAndNeighbor = function (countryCode) {
 
-    const request = new XMLHttpRequest();
-    request.open('GET', `https://restcountries.com/v3.1/alpha/${countryCode}`);
-    request.send();
+    fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`)
+        .then(response => response.json())
+        .then(([data]) => {
+            renderCountry(data);
+            const [neighbor] = data.borders;
+            if (!neighbor) return;
+            return fetch(`https://restcountries.com/v3.1/alpha/${neighbor}`);
 
-    request.addEventListener('load', function () {
+        })
+        .then(response => response.json())
+        .then(([data]) => renderCountry(data));
 
-        const [data] = JSON.parse(this.responseText);
-        console.log(data);
-        renderCountry(data);
-        const [neighbor] = data.borders;
-        if (!neighbor) return;
-
-        const request = new XMLHttpRequest();
-        request.open('GET', `https://restcountries.com/v3.1/alpha/${neighbor}`);
-        request.send();
-
-        request.addEventListener('load', function () {
-            const [data] = JSON.parse(this.responseText);
-            console.log(data);
-            renderCountry(data, 'neighbour');
-        });
-
-    });
 };
 
-// getCountryAndNeighbor('in');
-getCountryAndNeighbor('us');
+getCountryAndNeighbor('de');
 
 
 ///////////////////////////////////////
