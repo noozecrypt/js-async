@@ -40,18 +40,35 @@ const getCountryAndNeighbor = function (countryCode) {
             const [neighbor] = data.borders;
             return getJSON(`https://restcountries.com/v3.1/alpha/${neighbor}`, 'Country not found');
         })
-        .then(([data]) => renderCountry(data))
+        .then(([data]) => renderCountry(data, 'neighbour'))
         .catch(err => {
             console.error(`${err} ‼‼`);
             renderError(`Something went wrong 😔 ${err.message}`);
         }).finally(() => {
             btn.style.display = 'none';
             countriesContainer.style.opacity = 1;
-
         });
 
 };
 
+const getCountryAndNeighborFromZipcode = function (zipcode) {
+    fetch(`http://ZiptasticAPI.com/${zipcode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) throw new Error(`${data.error}`);
+            getCountryAndNeighbor(data.country);
+        })
+        .catch(err => {
+            console.error(`${err} ‼‼`);
+            renderError(`Something went wrong 😔 ${err.message}`);
+        })
+        .finally(() => {
+            btn.style.display = 'none';
+            countriesContainer.style.opacity = 1;
+        });
+};
+
 btn.addEventListener('click', function () {
     getCountryAndNeighbor('uae');
+    getCountryAndNeighborFromZipcode('54990');
 });
